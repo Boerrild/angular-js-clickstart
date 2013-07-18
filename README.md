@@ -8,6 +8,12 @@ This will setup a continuous deployment pipeline - a Jenkins build running the t
 Should it pass the tests, this seed app is deployed served up from a tiny node.js server (you 
 can then clone and mess with it, or change the backend to what you need). 
 
+If you don't have a cloudbees account:
+  <div>Sign in with GitHub:<div><button onClick="javascript:window.location='https://grandcentral.cloudbees.com/authenticate/start?provider=github&login_redirect=/';"><img src="https://grandcentral.cloudbees.com/images/github-icon_40.png" /></button>
+
+
+
+
 AngularJS home page is [Here](http://angularjs.org/)
 
 The Angular-seed project is [here](https://github.com/angular/angular-seed)
