@@ -5,8 +5,7 @@
     "patched-source" : "git://github.com/michaelneale/angular-seed.git",
     "description" : "Setup a Jenkins running Angular tests (with Chrome and Firefox) and deploy the 'seed' app",
     "icon" : "https://d3ko533tu1ozfq.cloudfront.net/clickstart/angularjs.png",
-    "disabled": true,
-
+    
     "supported-by" : "community",
     "order" : 3,
 
