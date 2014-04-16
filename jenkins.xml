@@ -74,84 +74,33 @@
   <builders>
     <hudson.tasks.Shell>
 
-  <command>export DISPLAY=:1
+ <command>export DISPLAY=:1
 Xvfb :1 &amp;
 
-#
-# Fetch node and testacular if we don&apos;t have it already
-#
+curl -s -o use-node https://repository-cloudbees.forge.cloudbees.com/distributions/ci-addons/node/use-node
+NODE_VERSION=0.10.26 . ./use-node
 
-node_version=v0.10.16
-install_name=node-$node_version-linux-x64
-node_home=$PWD/$install_name
-
-if [ ! -e $install_name.tar.gz ]
-then
-    wget http://nodejs.org/dist/$node_version/$install_name.tar.gz
-    tar xf $install_name.tar.gz
-    $node_home/bin/npm install -g phantomjs
-    $node_home/bin/npm install -g karma
-    $node_home/bin/npm install -g karma-junit-reporter
-    $node_home/bin/npm install -g karma-jasmine
-    $node_home/bin/npm install -g karma-ng-scenario
-fi
-
-# 
-# run the Angular.js tests (using a browser on the build server)
-#
-
-export PATH=$PATH:$node_home/bin
-export PHANTOMJS_BIN=$node_home/bin/phantomjs
-scripts/test.sh  --single-run --browsers=&quot;Chrome,Firefox&quot; --reporters=&quot;dots,junit&quot; --no-colors
-
-#
-# run the Angular.js e2e tests (this requires a server too)
-#
-
-node scripts/web-server.js &gt; /dev/null &amp;
-NODE_PID=$!
-scripts/e2e-test.sh --single-run --browsers=&quot;Chrome,Firefox&quot; --reporters=&quot;dots,junit&quot; --no-colors
-kill -s TERM $NODE_PID
-
-
-#
-# package the app for the CloudBees node.js stack (deployer picks it up)
-# 
-
-# Firstly, we are going to throw in a little express.js static web server
-# for fun ! can probably replace the one in the upstream
-# ideally - if angular folks agree.
-
-cat &gt; &quot;app/package.json&quot; &lt;&lt; EOF
-  {
-    &quot;name&quot;: &quot;hello-world&quot;,
-    &quot;description&quot;: &quot;hello world test app&quot;,
-    &quot;version&quot;: &quot;0.0.1&quot;,
-    &quot;private&quot;: true,
-    &quot;dependencies&quot;: {
-      &quot;express&quot;: &quot;3.x&quot;,
-      &quot;connect&quot; : &quot;2.x&quot; 
-    }
-  }
-EOF
-
-cat &gt; &quot;app/main.js&quot; &lt;&lt; EOF
-  var express = require(&apos;express&apos;);
-  var connect = require(&apos;connect&apos;);
-  var app = express();
-  app.use(connect.compress());
-  console.log(__dirname);
-  app.use(express.static(__dirname + &apos;/&apos;));
-  app.listen(process.env.PORT);
-EOF
-
-
-cd app
 npm install
+npm install karma-junit-reporter
 
-mkdir -p ../target
-rm -rf ../target/app.zip
-zip -r ../target/app.zip *</command>
+# Fail fast test first
+npm run test-single-run
+
+# Start web server for testing
+npm start &gt; /dev/null &amp;
+NODE_PID=$!
+
+npm run update-webdriver
+sleep 1 # give server time to start
+
+# Now run the end to end tests
+node_modules/.bin/karma start test/karma.conf.js --no-auto-watch --single-run --reporters=&quot;dots,junit&quot; --browsers=Firefox,Chrome
+node_modules/.bin/protractor test/protractor-conf.js --browser=firefox --reporters=&quot;dots,junit&quot;
+
+
+# Cleanup
+kill -s TERM $NODE_PID
+</command>
 
     </hudson.tasks.Shell>
     <com.cloudbees.plugins.deployer.DeployBuilder>
