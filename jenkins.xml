@@ -83,9 +83,6 @@ NODE_VERSION=0.10.26 . ./use-node
 npm install
 npm install karma-junit-reporter
 
-# Fail fast test first
-npm run test-single-run
-
 # Start web server for testing
 npm start &gt; /dev/null &amp;
 NODE_PID=$!
@@ -94,7 +91,7 @@ npm run update-webdriver
 sleep 1 # give server time to start
 
 # Now run the end to end tests
-node_modules/.bin/karma start test/karma.conf.js --no-auto-watch --single-run --reporters=&quot;dots,junit&quot; --browsers=Firefox,Chrome
+node_modules/.bin/karma start test/karma.conf.js --no-auto-watch --single-run --reporters=&quot;dots,junit&quot; --browsers=Firefox
 node_modules/.bin/protractor test/protractor-conf.js --browser=firefox --reporters=&quot;dots,junit&quot;
 
 
