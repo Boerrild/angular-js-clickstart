@@ -91,8 +91,8 @@ npm run update-webdriver
 sleep 1 # give server time to start
 
 # Now run the end to end tests
-node_modules/.bin/karma start test/karma.conf.js --no-auto-watch --single-run --reporters=&quot;dots,junit&quot; --browsers=Firefox
-node_modules/.bin/protractor test/protractor-conf.js --browser=firefox --reporters=&quot;dots,junit&quot;
+node_modules/.bin/karma start karma.conf.js --no-auto-watch --single-run --reporters=&quot;dots,junit&quot; --browsers=Firefox
+node_modules/.bin/protractor protractor-conf.js --browser=firefox --reporters=&quot;dots,junit&quot;
 
 
 # Cleanup
